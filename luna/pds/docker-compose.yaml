@@ -1,0 +1,24 @@
+services:
+  pds:
+    image: ghcr.io/bluesky-social/pds:0.4.67
+    ports:
+      - 2583:2583
+    volumes:
+      - ./pds_data:/luna/data
+      - ./pds_data_blobs:/luna/blob_data
+    environment:
+      PDS_DATA_DIRECTORY: /luna/data
+      PDS_BLOBSTORE_DISK_LOCATION: /luna/blob_data
+      PDS_HOSTNAME: "pds.coolsky.ln4.net"
+      PDS_PORT: "2583"
+      PDS_BLOB_UPLOAD_LIMIT: "100000000000"
+      PDS_DID_PLC_URL: "http://host.docker.internal:2582"
+      PDS_BSKY_APP_VIEW_URL: "http://host.docker.internal:2584"
+      PDS_BSKY_APP_VIEW_DID: "did:plc:AAAAAAAAAAAAAAAAAA"
+      PDS_REPORT_SERVICE_URL: "http:/host.docker.internal:2587" # ozone?
+      PDS_REPORT_SERVICE_DID: "did:plc:BBBBBBBBBBBBBBBBBb"
+      PDS_CRAWLERS: "https://host.docker.internal:8813" # relay?
+      LOG_ENABLED: "true"
+      PDS_JWT_SECRET: "4abb6f48bbd656205134f0b78eab35aa"
+      PDS_ADMIN_PASSWORD: "2f28e4183b8ab1b5a684df9078483d74"
+      PDS_PLC_ROTATION_KEY_K256_PRIVATE_KEY_HEX: "754ce7ddd8d1baf21613b508ad89fababf581f945ca59b8d7e7393ed948c8b8d"
