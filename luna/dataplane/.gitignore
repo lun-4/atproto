@@ -1,0 +1,3 @@
+dist/
+node_modules/
+dataplane_db_data/
