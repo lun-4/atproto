@@ -1,0 +1,12 @@
+services:
+  relay_db:
+    image: postgres:17
+    ports:
+      - '5857:5432'
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    healthcheck:
+      disable: true
+    volumes:
+      - ./relay_db_data:/var/lib/postgresql/data
