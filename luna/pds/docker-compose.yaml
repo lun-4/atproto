@@ -5,6 +5,10 @@ services:
       context: ..
       dockerfile: ./pds/Dockerfile
     # ghcr.io/bluesky-social/pds:0.4.67
+    extra_hosts:
+      - relay.gsky.ln4.net:172.17.0.1
+      - ozone.gsky.ln4.net:172.17.0.1
+      - pds.gsky.ln4.net:172.17.0.1
     ports:
       - 2583:2583
     volumes:
