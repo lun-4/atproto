@@ -25,4 +25,4 @@ export RELAY_CONCURRENCY_PER_PDS=20
 export RELAY_MAX_QUEUE_PER_PDS=200
 export RELAY_ADMIN_KEY=868d92e4318475
 
-~/other.git/indigo/bigsky --api-listen 127.0.0.1:2470
+~/other.git/indigo/bigsky --api-listen 0.0.0.0:2470
