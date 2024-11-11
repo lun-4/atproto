@@ -9,12 +9,14 @@ services:
       - relay.gsky.ln4.net:172.17.0.1
       - ozone.gsky.ln4.net:172.17.0.1
       - pds.gsky.ln4.net:172.17.0.1
+      - plc.gsky.ln4.net:172.17.0.1
     ports:
       - 2583:2583
     volumes:
       - ./pds_data:/luna/data
       - ./pds_data_blobs:/luna/blob_data
     environment:
+      NODE_OPTIONS: --use-openssl-ca
       PDS_DATA_DIRECTORY: /luna/data
       PDS_BLOBSTORE_DISK_LOCATION: /luna/blob_data
       PDS_HOSTNAME: "pds.gsky.ln4.net"
