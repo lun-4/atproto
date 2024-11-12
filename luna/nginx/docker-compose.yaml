@@ -2,6 +2,7 @@ services:
   nginx:
     ports:
       - 443:20030
+      - 9329:20031
     image: nginx:1.27
     volumes:
       - ./ssl-dhparams.pem:/etc/nginx/ssl-dhparams.pem:ro
