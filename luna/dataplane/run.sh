@@ -11,5 +11,6 @@ export DID_PLC_URL=https://plc.gsky.ln4.net
 export NODE_ENV=development
 export LOG_ENABLED=true
 export LOG_LEVEL=info
+export NODE_OPTIONS=--use-openssl-ca
 
 pnpm run start
