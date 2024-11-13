@@ -11,5 +11,6 @@ export NODE_ENV=development
 export LOG_ENABLED=true
 export LOG_LEVEL=info
 export NODE_OPTIONS=--use-openssl-ca
+export RELAY_WEBSOCKET_URL=wss://relay.gsky.ln4.net
 
 pnpm run start
