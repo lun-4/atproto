@@ -1,7 +1,6 @@
 #!/bin/sh
 set -x
 docker-compose up -d
-sleep 1
 cat init.sql | docker-compose exec -T dataplane_db psql -U postgres
 
 export POSTGRES_URL="postgres://dataplane_bsky:35fe8e78fc60435@localhost:5858/bsky_dataplane?schema=public"

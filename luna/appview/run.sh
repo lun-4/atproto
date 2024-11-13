@@ -7,6 +7,8 @@ export BSKY_PORT=2584
 export NODE_ENV=development 
 export PUBLIC_URL=https://appview.gsky.ln4.net
 export BSKY_DID_PLC_URL=https://plc.gsky.ln4.net
+# setup this did plc by first starting pds, then create account, then stop pds, add this did, restart it
+export BSKY_SERVER_DID=did:plc:q36j6tnvaw6i5zutg6nb547c
 export BSKY_BSYNC_URL=http://localhost:39999
 export BSKY_BLOB_RATE_LIMIT_BYPASS_KEY=asdf.com 
 export BSKY_BLOB_RATE_LIMIT_BYPASS_HOSTNAME=asdf.com 
