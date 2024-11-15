@@ -25,6 +25,7 @@ export RELAY_CONCURRENCY_PER_PDS=20
 export RELAY_MAX_QUEUE_PER_PDS=200
 export RELAY_ADMIN_KEY=868d92e4318475
 export ATP_PLC_HOST=https://plc.gsky.ln4.net
-export RELAY_SPIDERING=false
+export RELAY_SPIDERING=true
+export GOLOG_LOG_LEVEL=debug
 
 ~/other.git/indigo/bigsky --api-listen 0.0.0.0:2470

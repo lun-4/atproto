@@ -4,7 +4,7 @@ services:
     build:
       context: ..
       dockerfile: ./pds/Dockerfile
-    # command: sleep 1000
+    command: sleep 10000
     # ghcr.io/bluesky-social/pds:0.4.67
     extra_hosts:
       - relay.gsky.ln4.net:172.17.0.1
