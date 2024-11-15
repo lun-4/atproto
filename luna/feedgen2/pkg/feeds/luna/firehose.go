@@ -65,6 +65,7 @@ func (ff *FollowingFeed) GetFeedName() string {
 }
 
 func (ff *FollowingFeed) GetPage(ctx context.Context, feed string, userDID string, limit int64, cursor string) ([]*appbsky.FeedDefs_SkeletonFeedPost, *string, error) {
+	slog.Info("following feed page", slog.String("feed", feed), slog.String("user", userDID), slog.Int64("limit", limit), slog.String("cursor", cursor))
 	return nil, nil, nil
 }
 
@@ -192,6 +193,8 @@ func (ff *FollowingFeed) firehoseConsumer(ctx context.Context) error {
 					} else {
 						slog.Debug("post created", slog.String("at", atPath))
 					}
+				default:
+					slog.Debug("unknown record type, ignoring", slog.String("record", recordType))
 				}
 			}
 
