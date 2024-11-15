@@ -11,6 +11,8 @@ import (
 	"log/slog"
 	"net/http"
 	"os"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/bluesky-social/indigo/api/atproto"
@@ -21,6 +23,7 @@ import (
 	"github.com/bluesky-social/indigo/repo"
 	"github.com/ericvolp12/go-bsky-feed-generator/pkg/feedrouter"
 	"github.com/gorilla/websocket"
+	"github.com/samber/lo"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -64,9 +67,90 @@ func (ff *FollowingFeed) GetFeedName() string {
 	return ff.FeedName
 }
 
+func (ff *FollowingFeed) getFollowing(userDID string) ([]string, error) {
+	rows, err := ff.db.Query(`
+		SELECT to_did
+		FROM follow_relationships
+		WHERE from_did = ?`,
+		userDID)
+	if err != nil {
+		return nil, err
+	}
+
+	dids := make([]string, 0)
+	for rows.Next() {
+		var did string
+		err := rows.Scan(&did)
+		if err != nil {
+			return nil, err
+		}
+		dids = append(dids, did)
+	}
+	return dids, nil
+}
+
 func (ff *FollowingFeed) GetPage(ctx context.Context, feed string, userDID string, limit int64, cursor string) ([]*appbsky.FeedDefs_SkeletonFeedPost, *string, error) {
 	slog.Info("following feed page", slog.String("feed", feed), slog.String("user", userDID), slog.Int64("limit", limit), slog.String("cursor", cursor))
-	return nil, nil, nil
+
+	following, err := ff.getFollowing(userDID)
+	if err != nil {
+		slog.Error("error getting following", slog.String("user", userDID), slog.Any("err", err))
+		return nil, nil, err
+	}
+	var cursorAsIndex uint64
+
+	if cursor != "" {
+		cursorAsIndex, err = strconv.ParseUint(cursor, 10, 64)
+		if err != nil {
+			slog.Error("cursor invalid", slog.String("cursor", cursor), slog.Any("err", err))
+			return nil, nil, err
+		}
+	}
+
+	// hack for now
+	query := `
+		SELECT at_path, counter
+		FROM posts
+		WHERE`
+
+	args := make([]any, 0)
+	clauses := make([]string, 0)
+	for _, followingDID := range following {
+		clauses = append(clauses, ` author_did = ? `)
+		args = append(args, followingDID)
+	}
+	query += strings.Join(clauses, "OR")
+	query += `AND counter > ? `
+	args = append(args, cursorAsIndex)
+	query += `ORDER BY counter DESC `
+	query += fmt.Sprintf("LIMIT %d", limit)
+
+	fmt.Println(query)
+	rows, err := ff.db.Query(query, args...)
+	if err != nil {
+		slog.Error("error getting posts", slog.String("user", userDID), slog.Any("err", err))
+		return nil, nil, err
+	}
+	var maxIndex uint64
+	posts := make([]*appbsky.FeedDefs_SkeletonFeedPost, 0)
+	for rows.Next() {
+		var atPath string
+		var index uint64
+		if err := rows.Scan(&atPath, &index); err != nil {
+			slog.Error("error scanning row", slog.Any("err", err))
+			return nil, nil, err
+		}
+		if index > maxIndex {
+			maxIndex = index
+		}
+		posts = append(posts, &appbsky.FeedDefs_SkeletonFeedPost{
+			Post: atPath,
+		})
+	}
+
+	newCursor := fmt.Sprintf("%d", maxIndex)
+
+	return posts, lo.ToPtr(newCursor), nil
 }
 
 func (ff *FollowingFeed) Spawn(ctx context.Context) {
@@ -109,6 +193,7 @@ func (ff *FollowingFeed) Spawn(ctx context.Context) {
 	CREATE TABLE IF NOT EXISTS posts (
 		author_did text,
 		at_path text,
+		counter int unique,
 		primary key (author_did, at_path)
 	) STRICT;
 	CREATE INDEX IF NOT EXISTS posts_author_did_index ON posts (author_did);
@@ -187,7 +272,19 @@ func (ff *FollowingFeed) firehoseConsumer(ctx context.Context) error {
 					}
 				case "app.bsky.feed.post":
 					atPath := fmt.Sprintf("at://%s/%s", userDid, op.Path)
-					_, err := ff.db.Exec(`INSERT INTO posts (author_did, at_path) VALUES ($1, $2) ON CONFLICT DO NOTHING`, userDid, atPath)
+					row := ff.db.QueryRow(`SELECT MAX(counter) FROM posts`)
+					var maybeCurrentMaxIndex *uint64
+					err := row.Scan(&maybeCurrentMaxIndex)
+					if err != nil {
+						slog.Error("error getting max index", slog.Any("err", err))
+						return nil
+					}
+
+					var newIndex uint64
+					if maybeCurrentMaxIndex != nil {
+						newIndex = *maybeCurrentMaxIndex + 1
+					}
+					_, err = ff.db.Exec(`INSERT INTO posts (author_did, at_path, counter) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`, userDid, atPath, newIndex)
 					if err != nil {
 						slog.Error("error inserting post", slog.Any("err", err))
 					} else {
