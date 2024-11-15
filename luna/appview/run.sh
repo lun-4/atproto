@@ -17,5 +17,6 @@ export BSKY_DATAPLANE_URLS=http://dataplane.gsky.ln4.net:9329
 export BSKY_INDEXED_AT_EPOCH=2024-11-09T00:00:00Z 
 export BSKY_SERVICE_SIGNING_KEY=cdfeb707e884deb9b8d462911c31efdd029a07c5e39f5793838f13109a88509e
 export NODE_OPTIONS=--use-openssl-ca
+export BSKY_CDN_URL=https://cdn.gsky.ln4.net
 
 cd ~/other.git/atproto/services/bsky && node --enable-source-maps api.js
