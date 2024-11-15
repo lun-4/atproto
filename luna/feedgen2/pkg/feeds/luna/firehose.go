@@ -222,6 +222,7 @@ func (ff *FollowingFeed) main(ctx context.Context) {
 }
 
 func (ff *FollowingFeed) firehoseConsumer(ctx context.Context) error {
+	// TODO store max cursor from firehose for the events we successfully processed and then inject it here
 	uri := fmt.Sprintf("%s/xrpc/com.atproto.sync.subscribeRepos?cursor=0", ff.relayAddress)
 	con, _, err := websocket.DefaultDialer.Dial(uri, http.Header{})
 	if err != nil {
