@@ -115,6 +115,7 @@ func (ff *FollowingFeed) GetPage(ctx context.Context, feed string, userDID strin
 
 	args := make([]any, 0)
 	clauses := make([]string, 0)
+	following = append(following, userDID) // let user always see themselves
 	for _, followingDID := range following {
 		clauses = append(clauses, ` author_did = ? `)
 		args = append(args, followingDID)
