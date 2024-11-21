@@ -1,6 +1,7 @@
 #!/bin/sh
 set -eux
 inv=$(./localinvite.sh | jq -r .code)
+./goat.sh account create --handle mod.pds.gsky.ln4.net --password 123 --email mod@example.net -invite-code "$inv"
 ./goat.sh account create --handle feedgen.pds.gsky.ln4.net --password 123 --email feedgen@example.net -invite-code "$inv"
 ./goat.sh account create --handle user5.pds.gsky.ln4.net --password 123 --email user5@example.net -invite-code "$inv"
 ./goat.sh account create --handle user4.pds.gsky.ln4.net --password 123 --email user4@example.net -invite-code "$inv"

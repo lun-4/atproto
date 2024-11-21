@@ -120,7 +120,11 @@ func (ff *FollowingFeed) GetPage(ctx context.Context, feed string, userDID strin
 		args = append(args, followingDID)
 	}
 	query += strings.Join(clauses, "OR")
-	query += `AND counter > ? `
+	if len(clauses) > 0 {
+		query += `AND counter > ? `
+	} else {
+		query += ` counter > ?`
+	}
 	args = append(args, cursorAsIndex)
 	query += `ORDER BY counter DESC `
 	query += fmt.Sprintf("LIMIT %d", limit)
