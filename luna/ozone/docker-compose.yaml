@@ -1,5 +1,5 @@
 services:
-  dataplane_db:
+  ozone_db:
     image: postgres:17
     ports:
       - '35199:5432'
