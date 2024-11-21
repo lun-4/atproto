@@ -1,0 +1,12 @@
+services:
+  dataplane_db:
+    image: postgres:17
+    ports:
+      - '35199:5432'
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    healthcheck:
+      disable: true
+    volumes:
+      - ./ozone_db_data:/var/lib/postgresql/data
